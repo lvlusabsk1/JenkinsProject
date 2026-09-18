@@ -14,6 +14,17 @@ def mul(n1, n2):
 def div(n1, n2):
     return n1 / n2
 
+def get_number(prompt):
+    while True:
+        value = input(prompt)
+        if value.strip() == "":
+            print("Input cannot be empty. Please enter a number.")
+            continue
+        try:
+            return float(value)
+        except ValueError:
+            print("That's not a valid number. Please try again.")
+
 print("Please select operation -\n"
       "1. Add\n"
       "2. Subtract\n"
@@ -22,8 +33,8 @@ print("Please select operation -\n"
 
 sel = int(input("Select operation (1-4): "))
 
-n1 = int(input("Enter first number: "))
-n2 = int(input("Enter second number: "))
+n1 = get_number("Enter first number: ")
+n2 = get_number("Enter second number: ")
 
 if sel == 1:
     print(n1, "+", n2, "=", add(n1, n2))
