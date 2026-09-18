@@ -1,17 +1,26 @@
 pipeline {
-  agent any
-  environment {
-    DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
-  }
-  stages {
-    stage('Mohammad Musaab - Build Docker Image') {
-      steps { sh 'docker build -t mohammadmusaab/jenkins-docker-project:latest .' }
+    agent any
+    environment {
+        IMAGE = "mohammadmusaab/jenkins-docker-project" 
     }
-    stage('Mohammad Musaab - Login to Dockerhub') {
-      steps { sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin' }
+    stages {
+        stage('Mohammad Musaab - Build Docker Image') {
+            steps {
+                sh 'docker build -t ${IMAGE}:build-${BUILD_NUMBER} -t ${IMAGE}:latest .'
+            }
+        }
+        stage('Mohammad Musaab - Login to Dockerhub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                }
+            }
+        }
+        stage('Mohammad Musaab - Push image to Dockerhub') {
+            steps {
+                sh 'docker push ${IMAGE}:build-${BUILD_NUMBER}'
+                sh 'docker push ${IMAGE}:latest'
+            }
+        }
     }
-    stage('Mohammad Musaab - Push image to Dockerhub') {
-      steps { sh 'docker push mohammadmusaab/jenkins-docker-project:latest' }
-    }
-  }
 }
